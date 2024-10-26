@@ -1,0 +1,65 @@
+---
+title: "hk4"
+author: "shiyu"
+date: "2024-10-26"
+output: html_document
+---
+open pakages
+```{r}
+library(sp)
+library(sf)
+library(dplyr)
+library(here)
+library(tidyverse)
+library(ggplot2)
+library(countrycode)
+library(usethis)
+```
+
+```{r}
+edit_git_config()
+use_git()
+
+```
+
+load data
+```{r}
+#读取世界地图空间数据
+world_spatial <- st_read(here("h4_data","World_Countries_(Generalized)_9029012925078512962 (1).geojson"))
+#读取data_subset <- data %>% select(matches("^gii_201[0-9]$"))
+data <- read.csv(here("h4_data", "HDR23-24_Composite_indices_complete_time_series.csv"))
+```
+
+select gii data
+```{r}
+#提取gii数据2010-2019
+gii <- data %>% select(iso3, country, matches("^gii_199[0-9]$|^gii_20[0-2][0-9]$"))
+```
+
+iso2-3
+```{r}
+gii$ISO <- countrycode(gii$iso3, origin = "iso3c", destination = "iso2c")
+gii_filtered <- gii %>% filter(!(iso3 >= "zza" & iso3 <= "zzk.world"))
+```
+
+join data
+```{r}
+gii_world <- world_spatial %>%
+  left_join(gii_filtered, by = "ISO")
+distinct(gii_world)
+```
+
+clip
+```{r}
+gii_world$gii_diff <- gii_world$gii_2019 - gii_world$gii_2010
+```
+
+visualzation
+```{r}
+ggplot(data = gii_world) +
+  geom_sf(aes(fill = gii_diff), color = NA) +  # 用于填充颜色
+  scale_fill_viridis_c(option = "plasma", na.value = "grey") +  # 使用 Viridis 颜色调色板
+  theme_minimal() +  # 使用简约主题
+  labs(fill = "Inequality Difference (2019 - 2010)", title = "World Inequality Difference") +
+  theme(legend.position = "right")  # 图例位置
+```
