@@ -56,10 +56,14 @@ gii_world$gii_diff <- gii_world$gii_2019 - gii_world$gii_2010
 
 visualzation
 ```{r}
+install.packages("viridis")
+library(viridis)  # 确保已加载 viridis 包
+
 ggplot(data = gii_world) +
-  geom_sf(aes(fill = gii_diff), color = NA) +  # 用于填充颜色
-  scale_fill_viridis_c(option = "plasma", na.value = "grey") +  # 使用 Viridis 颜色调色板
-  theme_minimal() +  # 使用简约主题
+  geom_sf(aes(fill = gii_diff), color = NA) +
+  scale_fill_viridis_c(option = "plasma", na.value = "grey") +
+  theme_minimal() +
   labs(fill = "Inequality Difference (2019 - 2010)", title = "World Inequality Difference") +
-  theme(legend.position = "right")  # 图例位置
+  theme(legend.position = "right")
+
 ```
