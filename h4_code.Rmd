@@ -63,3 +63,13 @@ ggplot(data = gii_world) +
   labs(fill = "Inequality Difference (2019 - 2010)", title = "World Inequality Difference") +
   theme(legend.position = "right")  # 图例位置
 ```
+interactive map
+```{r}
+library(leafpop)
+library(leaflet)
+library(tmap)
+tmap_mode("view")
+
+tm_shape(gii_world) + 
+  tm_polygons("gii_diff")
+```
